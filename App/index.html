@@ -1,0 +1,176 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="Generator" content="EditPlus">
+	<meta name="Author" content="">
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+	<title>MKAPP接口功能测试</title>
+	<script type="text/javascript" src="http://su.bdimg.com/static/superplus/js/lib/jquery-1.10.2_d88366fd.js"></script>
+</head>
+<body style="text-align:center">
+	<style type="text/css">
+	body{background-color: #272822}
+	.main{width:800px; height:100%; margin:0 auto; padding:50px;}
+	.main table{width: 100%}
+	.main table tr td{border:solid 1px #575757; color:#F8F8F2;}
+	.main table tr .right{text-align: left; width: 85%}
+	#json_view { white-space:pre; }
+	</style>
+	<div class="main">
+		<table>
+			<tr>
+				<td>接口类型</td>
+				<td class="right">
+					<input type="radio" name="act" value="User" checked="checked" />用户   
+					<input type="radio" name="act" value="City" />城市 
+					<input type="radio" name="act" value="Theme" />主题 
+					<input type="radio" name="act" value="Circle" />商圈 
+					<input type="radio" name="act" value="Seller" />商家 
+					<input type="radio" name="act" value="Goods" />商品 
+					<input type="radio" name="act" value="Buy" />订单 
+					<!--<input type="radio" name="act" value="Sms" />短消息 -->
+					<input type="radio" name="act" value="Gift" />礼券 
+				</td>
+			</tr>
+			<tr>
+				<td>接口名称</td>
+				<td class="right"><select name="mod" style="width:235px;">
+					<option value="Session">当前用户身份</option>
+					<option value="Login">用户登录与注册</option>
+					<option value="SendMobileCaptcha">发送手机短信验证码</option>
+					<option value="Modify">用户信息修改</option>
+					<option value="Logout">用户退出登录</option>
+				</select><input type="hidden" name="act_mod" value="act=User&mod=Session" /></td>
+			</tr>
+			<tr>
+				<td>参数</td>
+				<td class="right"><input style="width:530px;" type="text" name="params" placeholder="语法为:&a=xx&c=xx" /></td>
+			</tr>
+			<tr>
+				<td colspan="2"><input type="button" value="执行" /></td>
+			</tr>
+			<tr>
+				<td>返回结果</td>
+				<td class="right"><span id="json_view"></span><hr /><span id="note"></span></td>
+			</tr>
+		</table>
+	</div>
+	<script type="text/javascript">
+	var arr = {
+		       'User':{'Session':'当前用户身份','Register':'用户注册','Login':'用户登录','SendMobileCaptcha':'发送手机短信验证码','Modify':'用户信息修改','Logout':'用户退出登录'},
+			   'City':{'CityList':'获取城市列表','ThemeObj':'获取某城市的主题','CircleList':'获取某城市的商圈'},
+			   'Theme':{'GoodsList':'获取某主题的商品，及其商家信息'},
+			   'Circle':{'StoreList':'获取某商圈的门店，及其商家信息'},
+			   'Seller':{'GoodsList':'某商家的商品','Info':'单商家详情','Session':'当前商家身份','Login':'商家登录','UseGift':'将单礼券改为已消费','WithdrawReq':'发起提现申请','WithdrawList':'查询提现状态','CheckGift':'查询单礼券可用状态','GiftList':'查询已消费的礼券','Modify':'修改商家（或店铺）登录密码','Logout':'商家退出登录'},
+			   'Goods':{'Info':'单商品详情'},
+			   'Buy':{'Order':'生成订单'},
+			   //'Sms':{'SmsList':'获取短消息列表','Modify':'更新短消息状态','Info':'获取单条短消息'},
+			   'Gift':{'SendList':'当前用户在某城市里送出的礼券','GetList':'当前用户在某城市里收到的礼券','Info':'单条礼券详情','Send':'转赠礼券'}
+			  };
+	var cs = {'User':['',
+			      '&mobile=18964699446&captcha=123456',
+				  '&mobile=18964699446',
+			      '&mobile=18964699446&captcha=123456&city_id=11&nick=soulence',
+			      ''
+			      ],
+			  'City':[
+			  	  '&pg=1&sz=3',
+			  	  '&city=11',
+			  	  '&city=11',
+			      ],
+			  'Theme':[
+			  	  '&theme=101&promoted=0&pg=1&sz=3'
+			  ],   
+			  'Circle':[
+  				  '&circle=101&pg=1&sz=3'
+			  ],   
+			  'Seller':[
+			  	  '&pg=1&sz=3&promoted=0&seller=101',
+			  	  '&seller=101',
+			  	  '',
+			  	  '&acct=soulence&pswd=soulence',
+			  	  '&gift=55814703',
+			  	  '',
+			  	  '&pg=1&sz=3',
+			  	  '&gift=55814703',
+			  	  '&pg=1&sz=3&status=7',
+			  	  '&pswd_old=soulence&pswd_new=soulence11&pswd_rep=soulence11',
+			  	  ''
+			      ],
+			  'Goods':[
+			  	  '&goods=10001'
+			      ],
+		      'Buy':[
+		  	  	  '&seller=101&goods=10001&rmb=22.88&gift_mobile=18964699442&gift_msg=一大段说明'
+			      ],
+			  /*'Sms':[
+			  	  '&gt=0&iam=sender&status=0&sort=id&pg=1&Sze=3',
+			  	  '&sms=8&status=1',
+			  	  '&sms=8'
+			      ],*/
+			  'Gift':[
+			  	  '&pg=1&sz=10',
+			  	  '&pg=1&sz=10',
+			  	  '&gift=2',
+			  	  '&gift=10024&gift_mobile=13234567809&gift_msg=送你个礼物'
+			      ]    
+		 	 }
+	var act = 'User';
+	$(function(){	 	 
+		var mod = $('select[name=mod]');   
+		var act_mod_obj =  $('input[name=act_mod]');
+		var params_obj = $('input[name=params]');  
+		$('.right input[type=radio]').on('click',function(){
+			act = $(this).val();
+			var html = '';
+			for(var x in arr[act]){
+				html += '<option value="'+x+'">'+arr[act][x]+'</option>';
+			}
+			mod.html(html);
+			params_obj.val(cs[act][0]);
+			act_mod_obj.val('act='+act+'&mod='+mod.val());
+		})	     
+		mod.on('change',function(e){
+			var colmn = $(this).get(0).selectedIndex;
+			act_mod_obj.val('act='+act+'&mod='+$(this).val());
+			params_obj.val(cs[act][colmn]);
+		})
+		$('input[type=button]').on('click',function(){
+			Common();
+		})
+
+		$(document).keydown(function (c) {
+	        if (c.keyCode == 13) {
+	        	Common();
+	        }
+    	});
+
+    	function Common(){
+    		var act_mod = act_mod_obj.val();
+			var params = params_obj.val();
+			var note = $('#note');
+			var data = {};
+			if(act_mod == 'act=Seller&mod=Modify'){
+				data = {'rsh_city':{11:2,12:9}}
+			}
+			$.ajax({
+				type: "POST",
+				data: data,
+				url: 'index.php?'+act_mod+params,
+				dataType: "json", 
+				success:function(data){
+					console.log(data);
+					$('#json_view').html(JSON.stringify(data, null, 4));
+					note.html('详情请在Console面板中查看!!!');
+				},
+				error:function(){
+					note.html('系统出错，请重试！！！');
+				}
+			})
+    	}
+	})
+	</script>
+</body>
+</html>
